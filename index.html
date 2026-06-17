@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Hardtec – CRM Comercial</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+/* ══════════════════════════════════════════════
+   TOKENS
+══════════════════════════════════════════════ */
+:root {
+  --bg:        #0D1117;
+  --surface:   #161B22;
+  --surface2:  #1C2333;
+  --border:    #30363D;
+  --border2:   #21262D;
+  --text:      #E6EDF3;
+  --text2:     #8B949E;
+  --text3:     #484F58;
+
+  --blue:      #2F81F7;
+  --blue-dim:  #1F6FEB22;
+  --green:     #3FB950;
+  --green-dim: #3FB95022;
+  --yellow:    #E3B341;
+  --yellow-dim:#E3B34122;
+  --purple:    #A371F7;
+  --purple-dim:#A371F722;
+  --orange:    #F78166;
+  --orange-dim:#F7816622;
+  --red:       #F85149;
+  --red-dim:   #F8514922;
+
+  --radius:    8px;
+  --mono:      'JetBrains Mono', monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+/* ══════════════════════════════════════════════
+   HEADER
+══════════════════════════════════════════════ */
+.header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 28px;
+  height: 62px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.logo-mark {
+  width: 38px; height: 38px;
+  background: var(--blue);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+.logo-name  { font-size: 17px; font-weight: 800; letter-spacing: -.3px; }
+.logo-sub   { font-size: 11px; color: var(--text2); font-weight: 400; }
+
+.header-right { display: flex; align-items: center; gap: 10px; }
+
+/* ══════════════════════════════════════════════
+   BUTTONS
+══════════════════════════════════════════════ */
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  border: none; border-radius: var(--radius);
+  font-family: inherit; font-size: 13px; font-weight: 600;
+  cursor: pointer; transition: filter .15s, opacity .15s;
+  white-space: nowrap;
+}
+.btn:hover { filter: brightness(1.1); }
+.btn-primary { background: var(--blue); color: #fff; padding: 9px 18px; }
+.btn-ghost   {
+  background: transparent;
+  color: var(--text2);
+  border: 1px solid var(--border);
+  padding: 8px 14px;
+}
+.btn-ghost:hover { background: var(--surface2); color: var(--text); }
+.btn-danger  { background: var(--red-dim); color: var(--red); border: 1px solid var(--red-dim); padding: 7px 13px; }
+.btn-danger:hover { background: var(--red); color: #fff; }
+.btn-sm { padding: 5px 12px; font-size: 12px; }
+
+/* ══════════════════════════════════════════════
+   TOOLBAR (filtros)
+══════════════════════════════════════════════ */
+.toolbar {
+  padding: 14px 28px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--border2);
+  background: var(--surface);
+}
+
+.inp-search {
+  flex: 1; min-width: 200px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 8px 14px;
+  font-family: inherit; font-size: 13px;
+  color: var(--text);
+  outline: none;
+  transition: border-color .15s;
+}
+.inp-search:focus { border-color: var(--blue); }
+.inp-search::placeholder { color: var(--text3); }
+
+.sel {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 8px 12px;
+  font-family: inherit; font-size: 13px;
+  color: var(--text2);
+  outline: none; cursor: pointer;
+  transition: border-color .15s;
+}
+.sel:focus { border-color: var(--blue); }
+
+.toolbar-meta {
+  margin-left: auto;
+  font-size: 12px;
+  color: var(--text3);
+  font-family: var(--mono);
+  white-space: nowrap;
+}
+
+/* ══════════════════════════════════════════════
+   TABELA
+══════════════════════════════════════════════ */
+.table-wrap {
+  overflow-x: auto;
+  padding: 20px 28px 40px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+col.c-cliente   { width: 22%; }
+col.c-categ     { width: 14%; }
+col.c-contato   { width: 13%; }
+col.c-andamento { width: 20%; }
+col.c-resp      { width: 13%; }
+col.c-atualiz   { width: 12%; }
+col.c-acoes     { width: 6%; }
+
+thead th {
+  text-align: left;
+  padding: 10px 14px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text3);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  transition: color .15s;
+}
+thead th:hover { color: var(--text2); }
+thead th .sort-icon { margin-left: 4px; opacity: .4; }
+thead th.sorted .sort-icon { opacity: 1; color: var(--blue); }
+
+tbody tr {
+  border-left: 3px solid transparent;
+  transition: background .12s;
+}
+tbody tr:hover { background: var(--surface2); }
+
+/* faixa lateral colorida = signature visual */
+tbody tr[data-status="Em contato"]        { border-left-color: var(--blue); }
+tbody tr[data-status="Visita agendada"]   { border-left-color: var(--purple); }
+tbody tr[data-status="Orçamento enviado"] { border-left-color: var(--yellow); }
+tbody tr[data-status="Em negociação"]     { border-left-color: var(--green); }
+tbody tr[data-status="Adiado"]            { border-left-color: var(--text3); }
+
+/* linha desatualizada */
+tbody tr.stale { background: var(--red-dim) !important; }
+tbody tr.stale:hover { background: #F8514930 !important; }
+
+td {
+  padding: 13px 14px;
+  font-size: 14px;
+  border-bottom: 1px solid var(--border2);
+  vertical-align: middle;
+}
+
+.td-cliente {
+  font-weight: 600;
+  font-size: 15px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* badges de categoria */
+.badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 10px; border-radius: 20px;
+  font-size: 12px; font-weight: 700;
+  white-space: nowrap;
+}
+.badge-cftv    { background: var(--purple-dim); color: var(--purple); }
+.badge-redes   { background: var(--blue-dim);   color: var(--blue); }
+.badge-wifi    { background: #1DA1F222;          color: #58C0ED; }
+.badge-dell    { background: var(--green-dim);   color: var(--green); }
+.badge-lenovo  { background: var(--orange-dim);  color: var(--orange); }
+.badge-venda   { background: var(--yellow-dim);  color: var(--yellow); }
+
+/* status pill */
+.status-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 5px 12px; border-radius: 20px;
+  font-size: 13px; font-weight: 600;
+  white-space: nowrap;
+}
+.status-pill::before {
+  content: '';
+  width: 7px; height: 7px; border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+}
+.pill-contato   { background: var(--blue-dim);   color: var(--blue); }
+.pill-visita    { background: var(--purple-dim);  color: var(--purple); }
+.pill-orcamento { background: var(--yellow-dim);  color: var(--yellow); }
+.pill-negociacao{ background: var(--green-dim);   color: var(--green); }
+.pill-adiado    { background: #8B949E18;          color: var(--text2); }
+
+.td-mono {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--text2);
+}
+
+.resp-chip {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: 13px;
+}
+.avatar {
+  width: 26px; height: 26px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; color: #fff;
+  flex-shrink: 0;
+}
+.av-h { background: var(--blue); }
+.av-l { background: var(--green); }
+
+.stale-badge {
+  display: inline-block;
+  background: var(--red-dim);
+  color: var(--red);
+  font-size: 10px; font-weight: 700;
+  padding: 1px 6px; border-radius: 4px;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+.actions-cell { white-space: nowrap; }
+.icon-btn {
+  background: transparent; border: none;
+  color: var(--text3); font-size: 16px;
+  cursor: pointer; padding: 4px 6px; border-radius: 6px;
+  transition: background .12s, color .12s;
+}
+.icon-btn:hover { background: var(--surface2); color: var(--text); }
+.icon-btn.del:hover { background: var(--red-dim); color: var(--red); }
+
+/* EMPTY STATE */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text3);
+}
+.empty-state .ei { font-size: 40px; margin-bottom: 10px; }
+.empty-state p   { font-size: 14px; }
+
+/* ══════════════════════════════════════════════
+   MODAL
+══════════════════════════════════════════════ */
+.overlay {
+  position: fixed; inset: 0;
+  background: rgba(1,4,9,.75);
+  z-index: 200;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  backdrop-filter: blur(3px);
+}
+.overlay.open { display: flex; }
+
+.modal {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  width: 100%; max-width: 520px;
+  max-height: 92vh;
+  overflow-y: auto;
+  box-shadow: 0 24px 80px rgba(0,0,0,.6);
+  animation: pop .18s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes pop {
+  from { opacity: 0; transform: scale(.94) translateY(8px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.modal-head {
+  padding: 22px 24px 18px;
+  border-bottom: 1px solid var(--border2);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.modal-title { font-size: 17px; font-weight: 700; }
+.btn-x {
+  background: var(--surface2); border: none; border-radius: 6px;
+  width: 30px; height: 30px; font-size: 18px; line-height: 1;
+  color: var(--text2); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background .12s;
+}
+.btn-x:hover { background: var(--border); color: var(--text); }
+
+.modal-body { padding: 20px 24px; display: flex; flex-direction: column; gap: 16px; }
+
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field label { font-size: 12px; font-weight: 600; color: var(--text2); }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+.inp {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 13px;
+  font-family: inherit; font-size: 14px;
+  color: var(--text); outline: none; width: 100%;
+  transition: border-color .15s;
+}
+.inp:focus { border-color: var(--blue); }
+.inp::placeholder { color: var(--text3); }
+textarea.inp { resize: vertical; min-height: 72px; }
+
+.modal-foot {
+  padding: 16px 24px;
+  border-top: 1px solid var(--border2);
+  display: flex; gap: 10px; justify-content: flex-end;
+}
+
+/* ══════════════════════════════════════════════
+   TOAST
+══════════════════════════════════════════════ */
+.toasts {
+  position: fixed; bottom: 22px; right: 22px;
+  display: flex; flex-direction: column; gap: 8px;
+  z-index: 999;
+}
+.toast {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 18px;
+  font-size: 13px; font-weight: 500;
+  box-shadow: 0 8px 30px rgba(0,0,0,.4);
+  animation: tup .2s ease;
+  display: flex; align-items: center; gap: 8px;
+  min-width: 220px;
+}
+@keyframes tup {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ══════════════════════════════════════════════
+   SCROLLBAR
+══════════════════════════════════════════════ */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<header class="header">
+  <div class="logo">
+    <div class="logo-mark">🔧</div>
+    <div>
+      <div class="logo-name">Hardtec Informática</div>
+      <div class="logo-sub">CRM Comercial</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <button class="btn btn-ghost btn-sm" onclick="exportarCSV()">⬇ Exportar CSV</button>
+    <button class="btn btn-primary" onclick="abrirModal()">＋ Nova Oportunidade</button>
+  </div>
+</header>
+
+<!-- ── TOOLBAR ── -->
+<div class="toolbar">
+  <input class="inp-search" id="busca" placeholder="🔍  Buscar cliente..." oninput="renderTabela()"/>
+  <select class="sel" id="filtroResp" onchange="renderTabela()">
+    <option value="">Todos os responsáveis</option>
+    <option value="Hayran">Hayran</option>
+    <option value="Lucas">Lucas</option>
+  </select>
+  <select class="sel" id="filtroCateg" onchange="renderTabela()">
+    <option value="">Todas as categorias</option>
+    <option value="CFTV">CFTV</option>
+    <option value="Redes">Redes</option>
+    <option value="WiFi">WiFi</option>
+    <option value="Dell">Dell</option>
+    <option value="Lenovo">Lenovo</option>
+    <option value="Venda Corporativa">Venda Corporativa</option>
+  </select>
+  <select class="sel" id="filtroStatus" onchange="renderTabela()">
+    <option value="">Todos os status</option>
+    <option value="Em contato">Em contato</option>
+    <option value="Visita agendada">Visita agendada</option>
+    <option value="Orçamento enviado">Orçamento enviado</option>
+    <option value="Em negociação">Em negociação</option>
+    <option value="Adiado">Adiado</option>
+  </select>
+  <button class="btn btn-ghost btn-sm" onclick="limparFiltros()">✕ Limpar</button>
+  <span class="toolbar-meta" id="meta"></span>
+</div>
+
+<!-- ── TABELA ── -->
+<div class="table-wrap">
+  <table>
+    <colgroup>
+      <col class="c-cliente"/>
+      <col class="c-categ"/>
+      <col class="c-contato"/>
+      <col class="c-andamento"/>
+      <col class="c-resp"/>
+      <col class="c-atualiz"/>
+      <col class="c-acoes"/>
+    </colgroup>
+    <thead>
+      <tr>
+        <th onclick="ordenar('cliente')">Cliente <span class="sort-icon" id="sort-cliente">↕</span></th>
+        <th onclick="ordenar('categ')">Categoria <span class="sort-icon" id="sort-categ">↕</span></th>
+        <th onclick="ordenar('contato')">1º Contato <span class="sort-icon" id="sort-contato">↕</span></th>
+        <th onclick="ordenar('status')">Andamento <span class="sort-icon" id="sort-status">↕</span></th>
+        <th onclick="ordenar('resp')">Responsável <span class="sort-icon" id="sort-resp">↕</span></th>
+        <th onclick="ordenar('atualiz')">Atualizado <span class="sort-icon" id="sort-atualiz">↕</span></th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody id="tbody"></tbody>
+  </table>
+</div>
+
+<!-- ── MODAL FORM ── -->
+<div class="overlay" id="ovlForm" onclick="fecharSeForaForm(event)">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="modalTitulo">Nova Oportunidade</div>
+      <button class="btn-x" onclick="fecharModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label>Nome do Cliente *</label>
+        <input class="inp" id="fCliente" placeholder="Ex: Supermercado Bom Preço"/>
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label>Categoria *</label>
+          <select class="inp" id="fCateg">
+            <option value="CFTV">📷 CFTV</option>
+            <option value="Redes">🌐 Redes</option>
+            <option value="WiFi">📶 WiFi</option>
+            <option value="Dell">💻 Dell</option>
+            <option value="Lenovo">🖥 Lenovo</option>
+            <option value="Venda Corporativa">🏢 Venda Corporativa</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Responsável</label>
+          <select class="inp" id="fResp">
+            <option value="Hayran">Hayran</option>
+            <option value="Lucas">Lucas</option>
+          </select>
+        </div>
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label>Data do 1º Contato</label>
+          <input class="inp" id="fContato" type="date"/>
+        </div>
+        <div class="field">
+          <label>Andamento</label>
+          <select class="inp" id="fStatus">
+            <option value="Em contato">Em contato</option>
+            <option value="Visita agendada">Visita agendada</option>
+            <option value="Orçamento enviado">Orçamento enviado</option>
+            <option value="Em negociação">Em negociação</option>
+            <option value="Adiado">Adiado</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label>Observações</label>
+        <textarea class="inp" id="fObs" placeholder="Escopo, endereço, detalhes..."></textarea>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="fecharModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="salvar()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── TOAST CONTAINER ── -->
+<div class="toasts" id="toasts"></div>
+
+<script>
+/* ══════════════════════════════════════════════════════════
+   CONFIGURAÇÃO
+   ─ DIAS_STALE: quantos dias sem atualização = destaque vermelho
+══════════════════════════════════════════════════════════ */
+const DIAS_STALE = 7;
+
+/* ══════════════════════════════════════════════════════════
+   CAMADA DE DADOS
+   ─ Para integrar uma API futura, substitua apenas as funções
+     abaixo: carregarDados(), salvarDados(), (opcionalmente
+     adicionarRegistro, atualizarRegistro, excluirRegistro).
+   ─ As funções de UI não precisam mudar.
+══════════════════════════════════════════════════════════ */
+
+// ── Chave do localStorage ──
+const LS_KEY = 'hardtec_crm_v1';
+
+/**
+ * Carrega registros.
+ * FUTURO: substitua por fetch('/api/registros').then(r => r.json())
+ */
+function carregarDados() {
+  try {
+    return JSON.parse(localStorage.getItem(LS_KEY) || '[]');
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * Persiste registros.
+ * FUTURO: substitua por fetch('/api/registros', { method:'PUT', body: JSON.stringify(dados) })
+ */
+function salvarDados(dados) {
+  localStorage.setItem(LS_KEY, JSON.stringify(dados));
+}
+
+/* ══════════════════════════════════════════════════════════
+   ESTADO
+══════════════════════════════════════════════════════════ */
+let dados = carregarDados();
+let editId = null;
+let sortCol = 'atualiz';
+let sortAsc = false;
+
+// ── Seed com exemplos se vazio ──
+if (!dados.length) {
+  const hoje = new Date();
+  const dStr = (off) => {
+    const d = new Date(hoje);
+    d.setDate(d.getDate() + off);
+    return d.toISOString().split('T')[0];
+  };
+  dados = [
+    { id: uid(), cliente:'Supermercado Bom Preço', categ:'CFTV',            contato: dStr(-14), status:'Em negociação',    resp:'Hayran', obs:'16 câmeras IP + NVR. 2 pavimentos.',   atualiz: Date.now() - 86400000*2  },
+    { id: uid(), cliente:'Clínica Dr. Medina',      categ:'Redes',           contato: dStr(-8),  status:'Orçamento enviado', resp:'Hayran', obs:'34 pontos Cat6 + 6 APs Ubiquiti.',    atualiz: Date.now() - 86400000*1  },
+    { id: uid(), cliente:'Auto Peças Norte',         categ:'CFTV',            contato: dStr(-20), status:'Visita agendada',  resp:'Lucas',  obs:'Câmeras externas, visita quinta.',     atualiz: Date.now() - 86400000*10 },
+    { id: uid(), cliente:'Escritório Silva',         categ:'Dell',            contato: dStr(-5),  status:'Em contato',       resp:'Lucas',  obs:'2 Notebooks Dell Latitude 5440.',      atualiz: Date.now() - 86400000*5  },
+    { id: uid(), cliente:'Farmácia Popular Centro',  categ:'WiFi',            contato: dStr(-3),  status:'Orçamento enviado', resp:'Hayran', obs:'Cobertura WiFi 3 andares.',           atualiz: Date.now() - 86400000*0  },
+    { id: uid(), cliente:'Construtora VB',           categ:'Venda Corporativa',contato: dStr(-30),status:'Adiado',           resp:'Lucas',  obs:'Projeto grande, cliente adiou para Q3.', atualiz: Date.now() - 86400000*15 },
+  ];
+  salvarDados(dados);
+}
+
+/* ══════════════════════════════════════════════════════════
+   HELPERS
+══════════════════════════════════════════════════════════ */
+function uid() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2);
+}
+
+function fmtData(str) {
+  if (!str) return '—';
+  const [y, m, d] = str.split('-');
+  return `${d}/${m}/${y}`;
+}
+
+function diasDesde(ts) {
+  return Math.floor((Date.now() - ts) / 86400000);
+}
+
+function fmtRelativo(ts) {
+  const d = diasDesde(ts);
+  if (d === 0) return 'hoje';
+  if (d === 1) return 'ontem';
+  return `${d}d atrás`;
+}
+
+function badgeCateg(c) {
+  const map = {
+    'CFTV':            'badge-cftv',
+    'Redes':           'badge-redes',
+    'WiFi':            'badge-wifi',
+    'Dell':            'badge-dell',
+    'Lenovo':          'badge-lenovo',
+    'Venda Corporativa':'badge-venda',
+  };
+  const icon = { CFTV:'📷', Redes:'🌐', WiFi:'📶', Dell:'💻', Lenovo:'🖥', 'Venda Corporativa':'🏢' };
+  return `<span class="badge ${map[c]||''}">${icon[c]||'📦'} ${c}</span>`;
+}
+
+function pillStatus(s) {
+  const map = {
+    'Em contato':        'pill-contato',
+    'Visita agendada':   'pill-visita',
+    'Orçamento enviado': 'pill-orcamento',
+    'Em negociação':     'pill-negociacao',
+    'Adiado':            'pill-adiado',
+  };
+  return `<span class="status-pill ${map[s]||''}">${s}</span>`;
+}
+
+function avatarResp(r) {
+  const cls = r === 'Hayran' ? 'av-h' : 'av-l';
+  return `<div class="resp-chip"><div class="avatar ${cls}">${r[0]}</div>${r}</div>`;
+}
+
+/* ══════════════════════════════════════════════════════════
+   FILTRO & ORDENAÇÃO
+══════════════════════════════════════════════════════════ */
+function getFiltrado() {
+  const q    = document.getElementById('busca').value.toLowerCase();
+  const resp = document.getElementById('filtroResp').value;
+  const catg = document.getElementById('filtroCateg').value;
+  const stat = document.getElementById('filtroStatus').value;
+
+  return dados.filter(r => {
+    const mQ = !q || r.cliente.toLowerCase().includes(q) || (r.obs||'').toLowerCase().includes(q);
+    const mR = !resp || r.resp === resp;
+    const mC = !catg || r.categ === catg;
+    const mS = !stat || r.status === stat;
+    return mQ && mR && mC && mS;
+  });
+}
+
+function ordenar(col) {
+  if (sortCol === col) sortAsc = !sortAsc;
+  else { sortCol = col; sortAsc = true; }
+  renderTabela();
+}
+
+function getSorted(arr) {
+  return [...arr].sort((a, b) => {
+    let va, vb;
+    if (sortCol === 'cliente')  { va = a.cliente; vb = b.cliente; }
+    if (sortCol === 'categ')    { va = a.categ;   vb = b.categ; }
+    if (sortCol === 'contato')  { va = a.contato; vb = b.contato; }
+    if (sortCol === 'status')   { va = a.status;  vb = b.status; }
+    if (sortCol === 'resp')     { va = a.resp;    vb = b.resp; }
+    if (sortCol === 'atualiz')  { va = a.atualiz; vb = b.atualiz; }
+    if (va < vb) return sortAsc ? -1 : 1;
+    if (va > vb) return sortAsc ? 1 : -1;
+    return 0;
+  });
+}
+
+function atualizarSortIcons() {
+  ['cliente','categ','contato','status','resp','atualiz'].forEach(c => {
+    const el = document.getElementById('sort-' + c);
+    if (!el) return;
+    el.textContent = sortCol === c ? (sortAsc ? '↑' : '↓') : '↕';
+    el.closest('th').classList.toggle('sorted', sortCol === c);
+  });
+}
+
+/* ══════════════════════════════════════════════════════════
+   RENDER TABELA
+══════════════════════════════════════════════════════════ */
+function renderTabela() {
+  const filtrado = getFiltrado();
+  const sorted   = getSorted(filtrado);
+  const tbody    = document.getElementById('tbody');
+  const meta     = document.getElementById('meta');
+
+  atualizarSortIcons();
+  meta.textContent = `${sorted.length} de ${dados.length} registros`;
+
+  if (!sorted.length) {
+    tbody.innerHTML = `
+      <tr><td colspan="7">
+        <div class="empty-state">
+          <div class="ei">🔍</div>
+          <p>Nenhum registro encontrado.</p>
+        </div>
+      </td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = sorted.map(r => {
+    const stale = diasDesde(r.atualiz) >= DIAS_STALE;
+    return `
+      <tr data-status="${r.status}" class="${stale ? 'stale' : ''}">
+        <td class="td-cliente">
+          ${r.cliente}
+          ${stale ? `<span class="stale-badge" title="Sem atualização há ${diasDesde(r.atualiz)} dias">⚠ ${diasDesde(r.atualiz)}d</span>` : ''}
+        </td>
+        <td>${badgeCateg(r.categ)}</td>
+        <td class="td-mono">${fmtData(r.contato)}</td>
+        <td>${pillStatus(r.status)}</td>
+        <td>${avatarResp(r.resp)}</td>
+        <td class="td-mono">${fmtRelativo(r.atualiz)}</td>
+        <td class="actions-cell">
+          <button class="icon-btn" title="Editar" onclick="editarRegistro('${r.id}')">✏️</button>
+          <button class="icon-btn del" title="Excluir" onclick="excluirRegistro('${r.id}')">🗑</button>
+        </td>
+      </tr>`;
+  }).join('');
+}
+
+/* ══════════════════════════════════════════════════════════
+   MODAL FORM
+══════════════════════════════════════════════════════════ */
+function abrirModal(id) {
+  editId = id || null;
+  document.getElementById('modalTitulo').textContent = id ? 'Editar Registro' : 'Nova Oportunidade';
+
+  if (id) {
+    const r = dados.find(x => x.id === id);
+    document.getElementById('fCliente').value = r.cliente;
+    document.getElementById('fCateg').value   = r.categ;
+    document.getElementById('fResp').value    = r.resp;
+    document.getElementById('fContato').value = r.contato || '';
+    document.getElementById('fStatus').value  = r.status;
+    document.getElementById('fObs').value     = r.obs || '';
+  } else {
+    document.getElementById('fCliente').value = '';
+    document.getElementById('fCateg').value   = 'CFTV';
+    document.getElementById('fResp').value    = 'Hayran';
+    document.getElementById('fContato').value = new Date().toISOString().split('T')[0];
+    document.getElementById('fStatus').value  = 'Em contato';
+    document.getElementById('fObs').value     = '';
+  }
+
+  document.getElementById('ovlForm').classList.add('open');
+  setTimeout(() => document.getElementById('fCliente').focus(), 80);
+}
+
+function fecharModal() {
+  document.getElementById('ovlForm').classList.remove('open');
+}
+
+function fecharSeForaForm(e) {
+  if (e.target === document.getElementById('ovlForm')) fecharModal();
+}
+
+function salvar() {
+  const cliente = document.getElementById('fCliente').value.trim();
+  if (!cliente) { toast('⚠️ Informe o nome do cliente'); return; }
+
+  const obj = {
+    cliente,
+    categ:   document.getElementById('fCateg').value,
+    resp:    document.getElementById('fResp').value,
+    contato: document.getElementById('fContato').value,
+    status:  document.getElementById('fStatus').value,
+    obs:     document.getElementById('fObs').value.trim(),
+    atualiz: Date.now(),
+    /* FUTURO: ao usar API, remova o campo atualiz daqui —
+       o backend deve gerenciar o timestamp de atualização */
+  };
+
+  if (editId) {
+    /* FUTURO: fetch(`/api/registros/${editId}`, { method:'PATCH', body: JSON.stringify(obj) }) */
+    const i = dados.findIndex(x => x.id === editId);
+    dados[i] = { ...dados[i], ...obj };
+    toast('✅ Registro atualizado');
+  } else {
+    /* FUTURO: fetch('/api/registros', { method:'POST', body: JSON.stringify(obj) }) */
+    dados.unshift({ id: uid(), ...obj });
+    toast('🎉 Oportunidade criada');
+  }
+
+  salvarDados(dados);
+  fecharModal();
+  renderTabela();
+}
+
+/* ══════════════════════════════════════════════════════════
+   EDITAR / EXCLUIR
+══════════════════════════════════════════════════════════ */
+function editarRegistro(id) {
+  abrirModal(id);
+}
+
+function excluirRegistro(id) {
+  const r = dados.find(x => x.id === id);
+  if (!r) return;
+  if (!confirm(`Excluir "${r.cliente}"?`)) return;
+
+  /* FUTURO: fetch(`/api/registros/${id}`, { method:'DELETE' }) */
+  dados = dados.filter(x => x.id !== id);
+  salvarDados(dados);
+  renderTabela();
+  toast('🗑 Registro excluído');
+}
+
+/* ══════════════════════════════════════════════════════════
+   FILTROS
+══════════════════════════════════════════════════════════ */
+function limparFiltros() {
+  document.getElementById('busca').value       = '';
+  document.getElementById('filtroResp').value  = '';
+  document.getElementById('filtroCateg').value = '';
+  document.getElementById('filtroStatus').value= '';
+  renderTabela();
+}
+
+/* ══════════════════════════════════════════════════════════
+   EXPORTAR CSV
+══════════════════════════════════════════════════════════ */
+function exportarCSV() {
+  const cols = ['Cliente','Categoria','1º Contato','Andamento','Responsável','Última Atualização','Observações'];
+  const rows = dados.map(r => [
+    r.cliente, r.categ, fmtData(r.contato), r.status, r.resp,
+    new Date(r.atualiz).toLocaleDateString('pt-BR'), r.obs || ''
+  ].map(v => `"${String(v).replace(/"/g,'""')}"`).join(','));
+
+  const csv  = [cols.join(','), ...rows].join('\n');
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = `hardtec-crm-${new Date().toISOString().split('T')[0]}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('⬇ CSV exportado');
+}
+
+/* ══════════════════════════════════════════════════════════
+   TOAST
+══════════════════════════════════════════════════════════ */
+function toast(msg) {
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.textContent = msg;
+  document.getElementById('toasts').appendChild(el);
+  setTimeout(() => el.remove(), 2800);
+}
+
+/* ══════════════════════════════════════════════════════════
+   INIT
+══════════════════════════════════════════════════════════ */
+renderTabela();
+</script>
+</body>
+</html>
